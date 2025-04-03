@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  TOKEN: ${{ secrets.HEX_SEMANTIC_INGEST_TOKEN }}
+  TOKEN: ${{ secrets.HEXSYNCFRESH }}
   DIRECTORY: .
 
 jobs:
