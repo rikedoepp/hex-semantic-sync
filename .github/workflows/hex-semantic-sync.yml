@@ -44,6 +44,3 @@ jobs:
           cat response.txt
           exit 1
         fi
-```
-
-This updated workflow includes more detailed logging for the HTTP status code, which can help in debugging the issue further.
