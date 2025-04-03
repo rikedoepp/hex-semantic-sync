@@ -1,7 +1,6 @@
 name: Hex Semantic Model Ingest
 
 on:
-  pull_request:
   push:
     branches:
       - main
@@ -14,52 +13,34 @@ jobs:
   hex-semantic-model-ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify token
-        run: |
-          if [ -z "$TOKEN" ]; then
-            echo "❌ Error: TOKEN not found. Please make sure the secret referenced in your workflow file exists in your repository."
-            exit 1
-          else
-            echo "Token exists, proceeding..."
-          fi
+    - name: Verify token
+      run: |
+        if [ -z "$TOKEN" ]; then
+          echo "❌ Error: TOKEN not found. Please make sure the secret referenced in your workflow file exists in your repository."
+          exit 1
+        else
+          echo "✅ Token exists, proceeding..."
+        fi
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Zip up files
-        run: |
-          cd $DIRECTORY
-          zip -r repo.zip .
+    - name: Zip semantic model
+      run: |
+        cd $DIRECTORY
+        zip -r repo.zip .
 
-      - name: Ingest Semantic Model
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        run: |
-          response=$(curl -s -w "%{http_code}" -o response.txt -X POST \
-            -F "data=@$DIRECTORY/repo.zip" \
-            https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
-            -H "Authorization: Bearer $TOKEN")
-          if [ "$response" -eq 201 ]; then
-            echo "✅ Successfully ingested semantic model. See below for details:"
-            cat response.txt | jq 'del(.debug)'
-          else
-            echo "❌ Something went wrong."
-            cat response.txt
-            exit 1
-          fi
-
-      - name: Ingest Semantic Model (dry run)
-        if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
-        run: |
-          response=$(curl -s -w "%{http_code}" -o response.txt -X POST \
-            -F "data=@$DIRECTORY/repo.zip" \
-            -F "dryRun=true" \
-            https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
-            -H "Authorization: Bearer $TOKEN")
-          if [ "$response" -eq 201 ]; then
-            echo "✅ Successfully ingested semantic model (dry run). See below for details:"
-            cat response.txt | jq 'del(.debug)'
-          else
-            echo "❌ Something went wrong (dry run)."
-            cat response.txt
-            exit 1
-          fi
+    - name: Ingest Semantic Model to Hex
+      run: |
+        response=$(curl -s -w "%{http_code}" -o response.txt -X POST \
+          -F "data=@$DIRECTORY/repo.zip" \
+          https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
+          -H "Authorization: Bearer $TOKEN")
+        if [ "$response" -eq 201 ]; then
+          echo "✅ Successfully ingested semantic model:"
+          cat response.txt | jq
+        else
+          echo "❌ Something went wrong:"
+          cat response.txt
+          exit 1
+        fi
