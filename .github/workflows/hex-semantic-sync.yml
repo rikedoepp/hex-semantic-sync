@@ -1,3 +1,19 @@
+The failure in your workflow is due to an authorization issue with the `TOKEN` being used. Specifically, the error message indicates that the action is not authorized to perform the requested operation.
+
+### Solution
+1. **Verify the Secret Token**: Ensure that the secret `HEXSYNCFRESH` is correctly set in your repository settings.
+    - Go to your repository on GitHub.
+    - Navigate to **Settings** > **Secrets and variables** > **Actions**.
+    - Ensure that `HEXSYNCFRESH` is listed and has the correct value.
+
+2. **Check Token Permissions**: Verify that the token has the necessary permissions to perform the action.
+    - The token should have write access to the API endpoint you're trying to reach.
+
+3. **Update Workflow to Log More Information**: Modify the workflow to provide more detailed logging.
+
+Here is an updated version of your workflow file to include additional logging:
+
+```yaml
 name: Hex Semantic Model Ingest
 
 on:
@@ -36,11 +52,16 @@ jobs:
           -F "data=@$DIRECTORY/repo.zip" \
           https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
           -H "Authorization: Bearer $TOKEN")
-        if [ "$response" -eq 201 ]; then
+        http_code=$(tail -n1 response.txt)
+        if [ "$http_code" -eq 201 ]; then
           echo "✅ Successfully ingested semantic model:"
           cat response.txt | jq
         else
           echo "❌ Something went wrong:"
+          echo "HTTP Status Code: $http_code"
           cat response.txt
           exit 1
         fi
+```
+
+This updated workflow includes more detailed logging for the HTTP status code, which can help in debugging the issue further.
