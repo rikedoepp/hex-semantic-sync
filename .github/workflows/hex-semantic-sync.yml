@@ -1,21 +1,3 @@
-The failure in your workflow is due to an authorization issue with the `TOKEN` being used. Specifically, the error message indicates that the action is not authorized to perform the requested operation.
-
-### Solution
-1. **Verify the Secret Token**: Ensure that the secret `HEXSYNCFRESH` is correctly set in your repository settings.
-    - Go to your repository on GitHub.
-    - Navigate to **Settings** > **Secrets and variables** > **Actions**.
-    - Ensure that `HEXSYNCFRESH` is listed and has the correct value.
-
-2. **Check Token Permissions**: Verify that the token has the necessary permissions to perform the action.
-    - The token should have write access to the API endpoint you're trying to reach.
-
-3. **Update Workflow to Log More Information**: Modify the workflow to provide more detailed logging.
-
-Here is an updated version of your workflow file to include additional logging:
-
-```yaml
-name: Hex Semantic Model Ingest
-
 on:
   push:
     branches:
