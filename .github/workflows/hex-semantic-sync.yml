@@ -32,7 +32,7 @@ jobs:
       run: |
           response=$(curl -s -w "%{http_code}" -o response.txt -X POST \
             -F "data=@$DIRECTORY/repo.zip" \
-            https://app.hex.tech/api/v1/semantic-models/0195faad-2885-7002-9db1-62ef9b135401/ingest \
+            https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
             -H "Authorization: Bearer $TOKEN")
           if [ "$response" -eq 201 ]; then
             echo "✅ Successfully ingested semantic model. See below for details:"
@@ -48,7 +48,7 @@ jobs:
           response=$(curl -s -w "%{http_code}" -o response.txt -X POST \
             -F "data=@$DIRECTORY/repo.zip" \
             -F "dryRun=true" \
-            https://app.hex.tech/api/v1/semantic-models/0195faad-2885-7002-9db1-62ef9b135401/ingest \
+            https://app.hex.tech/api/v1/semantic-models/0195f2b6-396e-7007-8d12-43fd068c1bbb/ingest \
             -H "Authorization: Bearer $TOKEN")
           if [ "$response" -eq 201 ]; then
             echo "✅ Successfully ingested semantic model. See below for details:"
